@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fetch Data on Button Click</title>
+  </head>
+  <body>
+    <p id="statusText"></p>
+    <button id="copyButton">Async Copy</button>
+    <button id="safariCopyButton">Safari Async Copy</button>
+
+    <script>
+      // URL of the JSONPlaceholder API endpoint for fetching a single post
+      const apiUrl = 'https://jsonplaceholder.typicode.com/posts/1'
+      const statusText = document.getElementById('statusText')
+
+      const loadingTextStatus = () => {
+        statusText.textContent = 'Loading...'
+      }
+      const failedTextStatus = (errorText) => {
+        statusText.textContent = errorText || 'Failed to copy text to clipboard'
+      }
+      const succeededTextStatus = () => {
+        statusText.textContent = 'Text copied to clipboard successfully'
+      }
+
+      document.getElementById('copyButton').addEventListener('click', () => {
+        loadingTextStatus()
+        setTimeout(() => {
+          fetch(apiUrl)
+            .then((response) => {
+              navigator.clipboard
+                .writeText('Copied Text')
+                .then(succeededTextStatus)
+                .catch((e) => {
+                  failedTextStatus(e)
+                })
+            })
+            .catch(failedTextStatus)
+        }, 1000)
+      })
+
+      document
+        .getElementById('safariCopyButton')
+        .addEventListener('click', () => {
+          loadingTextStatus()
+          const clipboardItem = new ClipboardItem({
+            'text/plain': fetch(apiUrl)
+              .then(() => {
+                return new Blob(['Safari Copied Text'])
+              })
+              .catch(failedTextStatus),
+          })
+          navigator.clipboard
+            .write([clipboardItem])
+            .then(succeededTextStatus)
+            .catch((e) => {
+              failedTextStatus(e)
+            })
+        })
+    </script>
+  </body>
+</html>

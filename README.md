@@ -1,0 +1,1 @@
+# safari-clipboard-in-async-context
